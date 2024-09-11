@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
+
 
 
 """
@@ -17,7 +18,7 @@ USER_ID_TO_USER_INFO_MAPPER = {
 }
 
 
-def get_user_info_view(request, user_id: int):
+def get_user_info_view(request: HttpRequest, user_id: int) -> JsonResponse:
     if user_id in USER_ID_TO_USER_INFO_MAPPER:
         return JsonResponse(data=USER_ID_TO_USER_INFO_MAPPER[user_id])
     else:
