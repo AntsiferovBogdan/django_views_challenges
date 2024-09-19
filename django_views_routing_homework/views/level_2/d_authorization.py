@@ -1,6 +1,6 @@
 import json
 
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpRequest
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -35,15 +35,17 @@ USERNAME_TO_PASSWORD_MAPPER = {
 
 
 @csrf_exempt
-def process_authorization_view(request):
+def process_authorization_view(request: HttpRequest) -> JsonResponse | HttpResponseNotAllowed:
     if request.method == 'POST':
         data = json.loads(request.body)
-        # код писать тут
+        status = 403
+        if USERNAME_TO_PASSWORD_MAPPER.get(data['username']) == data['password']:
+            status = 200
+        return JsonResponse(data={}, status=status)
     else:
         return HttpResponseNotAllowed(permitted_methods=['POST'])
 
 
 # не обращайте внимания на эту вьюху, она нужна лишь для отрисовки страницы авторизации
-def authorization_view(request):
+def authorization_view(request: HttpRequest) -> HttpResponse:
     return render(request, 'authorization.html')
-
